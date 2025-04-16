@@ -7,7 +7,6 @@ using SigmaSoftware.Data.Entites;
 using SigmaSoftware.Data.RepositoryContracts;
 using SigmaSoftware.Service.ServiceContracts;
 using StatusGeneric;
-using System.Threading.Tasks;
 
 namespace SigmaSoftware.Service.Services;
 
@@ -68,12 +67,33 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
         return user.Adapt<UserDto>();
     }
 
-    public Task UpdateUser(Guid userId, UpdateUserModel model)
+    public async Task UpdateUser(Guid userId, UpdateUserModel model)
     {
 
-        throw new NotImplementedException();
+        var user = await _userRepository.GetById(userId);
+        if (user is null)
+        {
+            AddError("User not found.");
+            return;
+        }
 
+        var updatedUser = model.Adapt<User>();
+        _userRepository.Update(updatedUser);
+        await _userRepository.SaveChanges();
+        //bool isThereUser = _memoryCache.TryGetValue(CacheKey, out User? user);
+
+        //if (!isThereUser)
+        //{
+        //    user = await _userRepository.GetById(userId);
+        //    _memoryCache.Set(CacheKey, user);
+        //}
+        //if (user is null)
+        //{
+        //    AddError("User not found.");
+        //    return;
+        //}
+
+        //_userRepository.Update(user);
+        //await _userRepository.SaveChanges();
     }
-
-
 }
