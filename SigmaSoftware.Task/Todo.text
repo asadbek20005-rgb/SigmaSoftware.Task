@@ -1,0 +1,19 @@
+1. Creating web Api that stores information about candidates.
+2. Api endpoint should be one in the application.
+3. Api endpoint should be able to create, read, update and delete candidates.
+4. APi endpoint is a little, but be able to scale in the future.
+5. User's email should be unique.
+6. If user's profile is exist in the database, it should be updated or not created.
+7. User{
+	FirstName: string; [required]
+	LastName: string; [required]
+	phone: string;
+	Email: string; [required]
+	CallTime: string;
+	LinkedInUrl: string;
+	GitHubUrl: string;
+	Comment: string; [required]
+}
+8. It is important to be able to scale the application without changing the business logic.
+9. Unit Test should be written for the application.
+10. Git changes should be one of the biznes logic.
