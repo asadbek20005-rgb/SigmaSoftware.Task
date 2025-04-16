@@ -1,5 +1,9 @@
-using SigmaSoftware.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using SigmaSoftware.Data.DbContexts;
+using SigmaSoftware.Data.Repositories;
+using SigmaSoftware.Data.RepositoryContracts;
+using SigmaSoftware.Service.ServiceContracts;
+using SigmaSoftware.Service.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +16,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddMemoryCache();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
