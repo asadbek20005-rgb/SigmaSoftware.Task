@@ -47,9 +47,16 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
         throw new NotImplementedException();
     }
 
-    public Task<UserDto?> GetUserById(Guid userId)
+    public async Task<UserDto?> GetUserById(Guid userId)
     {
-        throw new NotImplementedException();
+        bool isThereUser = _memoryCache.TryGetValue(CacheKey, out User? user);
+        if (!isThereUser)
+        {
+            user = await _userRepository.GetById(userId);
+            _memoryCache.Set(CacheKey, user);
+        }
+
+        return user.Adapt<UserDto>();
     }
 
     public Task UpdateUser(Guid userId, UpdateUserModel model)
