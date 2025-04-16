@@ -1,4 +1,6 @@
-﻿namespace SigmaSoftware.Data.RepositoryContracts;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace SigmaSoftware.Data.RepositoryContracts;
 
 public interface IBaseRepository<TEntity> where TEntity :class
 {
@@ -8,4 +10,8 @@ public interface IBaseRepository<TEntity> where TEntity :class
     void Update(TEntity entity);
 
     Task SaveChanges();
+    Task<IDbContextTransaction> BeginTransactionAsync();
+    Task CommitTransactionAsync();
+    Task RollbackTransactionAsync();
+
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using SigmaSoftware.Data.DbContexts;
 using SigmaSoftware.Data.RepositoryContracts;
 
@@ -12,6 +12,16 @@ public class BaseRepository<TEntity>(AppDbContext appDbContext) : IBaseRepositor
         await _context.Set<TEntity>().AddAsync(entity);
     }
 
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await _context.Database.BeginTransactionAsync();
+    }
+
+    public async Task CommitTransactionAsync()
+    {
+        await _context.Database.CommitTransactionAsync();
+    }
+
     public IQueryable<TEntity> GetAll()
     {
         return _context.Set<TEntity>().AsQueryable();
@@ -20,6 +30,11 @@ public class BaseRepository<TEntity>(AppDbContext appDbContext) : IBaseRepositor
     public async Task<TEntity?> GetById<TId>(TId id)
     {
         return await _context.Set<TEntity>().FindAsync(id);
+    }
+
+    public async Task RollbackTransactionAsync()
+    {
+        await _context.Database.RollbackTransactionAsync();
     }
 
     public async Task SaveChanges()
