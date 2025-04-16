@@ -1,4 +1,5 @@
-﻿using SigmaSoftware.Data.DbContexts;
+﻿using Microsoft.EntityFrameworkCore;
+using SigmaSoftware.Data.DbContexts;
 using SigmaSoftware.Data.RepositoryContracts;
 
 namespace SigmaSoftware.Data.Repositories;
@@ -11,9 +12,9 @@ public class BaseRepository<TEntity>(AppDbContext appDbContext) : IBaseRepositor
         await _context.Set<TEntity>().AddAsync(entity);
     }
 
-    public IEnumerable<TEntity> GetAll()
+    public IQueryable<TEntity> GetAll()
     {
-        return _context.Set<TEntity>().ToList();
+        return _context.Set<TEntity>().AsQueryable();
     }
 
     public async Task<TEntity?> GetById<TId>(TId id)

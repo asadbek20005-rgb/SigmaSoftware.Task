@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using SigmaSoftware.Common.Dtos;
 using SigmaSoftware.Common.Models;
@@ -6,6 +7,7 @@ using SigmaSoftware.Data.Entites;
 using SigmaSoftware.Data.RepositoryContracts;
 using SigmaSoftware.Service.ServiceContracts;
 using StatusGeneric;
+using System.Threading.Tasks;
 
 namespace SigmaSoftware.Service.Services;
 
@@ -42,9 +44,16 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
         await _userRepository.SaveChanges();
     }
 
-    public List<UserDto> GetAllUsers()
+    public async Task<List<UserDto>> GetAllUsers()
     {
-        throw new NotImplementedException();
+        bool areThereUsers = _memoryCache.TryGetValue(CacheKey, out List<User>? users);
+        if (!areThereUsers)
+        {
+            users = await _userRepository.GetAll().ToListAsync();
+            _memoryCache.Set(CacheKey, users);
+        }
+
+        return users.Adapt<List<UserDto>>();
     }
 
     public async Task<UserDto?> GetUserById(Guid userId)
