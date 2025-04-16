@@ -17,23 +17,12 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
     private readonly IBaseRepository<User> _userRepository = userRepository;
     public async Task AddUser(AddUserModel model)
     {
-        bool areThereUsers = _memoryCache.TryGetValue(CacheKey, out List<User>? users);
-        if (!areThereUsers)
-        {
-            users = _userRepository.GetAll().ToList();
-            _memoryCache.Set(CacheKey, users);
-        }
-
+        var users = await GetAllUsersFromCache();
 
         var user = users?.Where(u => u.Email == model.Email)
             .FirstOrDefault();
 
-        if (user is not null)
-        {
-            var updatedUser = model.Adapt<UpdateUserModel>();
-            await UpdateUser(user.Id, updatedUser);
-            return;
-        }
+        await UpdateUserIfNotExist(user, model);
 
         var newUser = model.Adapt<User>();
         await _userRepository.Add(newUser);
@@ -41,15 +30,8 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
     }
 
     public async Task<List<UserDto>> GetAllUsers()
-    
     {
-        bool areThereUsers = _memoryCache.TryGetValue(CacheKey, out List<User>? users);
-        if (!areThereUsers)
-        {
-            users = await _userRepository.GetAll().ToListAsync();
-            _memoryCache.Set(CacheKey, users);
-        }
-
+        var users = await GetAllUsersFromCache();
         return users.Adapt<List<UserDto>>();
     }
 
@@ -67,8 +49,10 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
 
     public async Task UpdateUser(Guid userId, UpdateUserModel model)
     {
+        var users = await GetAllUsersFromCache();
+        var user = users?.Where(u => u.Id == userId)
+            .FirstOrDefault();
 
-        var user = await _userRepository.GetById(userId);
         if (user is null)
         {
             AddError("User not found.");
@@ -76,22 +60,32 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
         }
 
         var updatedUser = model.Adapt(user);
+
         _userRepository.Update(updatedUser);
         await _userRepository.SaveChanges();
-        //bool isThereUser = _memoryCache.TryGetValue(CacheKey, out User? user);
-
-        //if (!isThereUser)
-        //{
-        //    user = await _userRepository.GetById(userId);
-        //    _memoryCache.Set(CacheKey, user);
-        //}
-        //if (user is null)
-        //{
-        //    AddError("User not found.");
-        //    return;
-        //}
-
-        //_userRepository.Update(user);
-        //await _userRepository.SaveChanges();
     }
+
+    private async Task<List<User>?> GetAllUsersFromCache()
+    {
+        bool isThereUser = _memoryCache.TryGetValue(CacheKey, out List<User>? user);
+        if (!isThereUser)
+        {
+            user = await _userRepository.GetAll().ToListAsync();
+            _memoryCache.Set(CacheKey, user);
+        }
+        return user;
+    }
+
+    private async Task UpdateUserIfNotExist(User? user, AddUserModel model)
+    {
+        if (user is not null)
+        {
+            var updatedUser = model.Adapt<UpdateUserModel>();
+            await UpdateUser(user.Id, updatedUser);
+            return;
+        }
+
+    }
+
+
 }
