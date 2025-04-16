@@ -23,19 +23,16 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
             users = _userRepository.GetAll().ToList();
             _memoryCache.Set(CacheKey, users);
         }
-        if (users is null || !users.Any())
-        {
-            AddError("No users found in the cache.");
-            return;
-        }
 
-        var user = users.Where(u => u.Email == model.Email)
+
+        var user = users?.Where(u => u.Email == model.Email)
             .FirstOrDefault();
 
         if (user is not null)
         {
             var updatedUser = model.Adapt<UpdateUserModel>();
             await UpdateUser(user.Id, updatedUser);
+            return;
         }
 
         var newUser = model.Adapt<User>();
@@ -44,6 +41,7 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
     }
 
     public async Task<List<UserDto>> GetAllUsers()
+    
     {
         bool areThereUsers = _memoryCache.TryGetValue(CacheKey, out List<User>? users);
         if (!areThereUsers)
@@ -77,7 +75,7 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
             return;
         }
 
-        var updatedUser = model.Adapt<User>();
+        var updatedUser = model.Adapt(user);
         _userRepository.Update(updatedUser);
         await _userRepository.SaveChanges();
         //bool isThereUser = _memoryCache.TryGetValue(CacheKey, out User? user);

@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SigmaSoftware.Common\SigmaSoftware.Common.csproj" />
     <ProjectReference Include="..\SigmaSoftware.Data\SigmaSoftware.Data.csproj" />
+    <ProjectReference Include="..\SigmaSoftware.Service\SigmaSoftware.Service.csproj" />
   </ItemGroup>
 
 </Project>
