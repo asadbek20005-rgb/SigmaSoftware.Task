@@ -17,16 +17,26 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
     private readonly IBaseRepository<User> _userRepository = userRepository;
     public async Task AddUser(AddUserModel model)
     {
-        var users = await GetAllUsersFromCache();
+        try
+        {
+            using var transaction = await _userRepository.BeginTransactionAsync();
+            var users = await GetAllUsers();
+            var user = users.Where(u => u.Email == model.Email)
+                .FirstOrDefault();
+            bool isUpdated = await UpdateUserIfNotExist(user, model);
+            if (isUpdated)
+                return;
+            var newUser = model.Adapt<User>();
+            await _userRepository.Add(newUser);
+            await _userRepository.SaveChanges();
 
-        var user = users?.Where(u => u.Email == model.Email)
-            .FirstOrDefault();
-
-        await UpdateUserIfNotExist(user, model);
-
-        var newUser = model.Adapt<User>();
-        await _userRepository.Add(newUser);
-        await _userRepository.SaveChanges();
+            await _userRepository.CommitTransactionAsync();
+        }
+        catch (Exception e)
+        {
+            await _userRepository.RollbackTransactionAsync();
+            throw new Exception(e.Message);
+        }
     }
 
     public async Task<List<UserDto>> GetAllUsers()
@@ -49,20 +59,32 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
 
     public async Task UpdateUser(Guid userId, UpdateUserModel model)
     {
-        var users = await GetAllUsersFromCache();
-        var user = users?.Where(u => u.Id == userId)
-            .FirstOrDefault();
-
-        if (user is null)
+        try
         {
-            AddError("User not found.");
-            return;
+            using var transaction = await _userRepository.BeginTransactionAsync();
+            var users = await GetAllUsersFromCache();
+            var user = users?.Where(u => u.Id == userId)
+                .FirstOrDefault();
+
+            if (user is null)
+            {
+                AddError("User not found.");
+                return;
+            }
+
+            var updatedUser = model.Adapt(user);
+
+            _userRepository.Update(updatedUser);
+            await _userRepository.SaveChanges();
+
+            await _userRepository.CommitTransactionAsync();
+
         }
-
-        var updatedUser = model.Adapt(user);
-
-        _userRepository.Update(updatedUser);
-        await _userRepository.SaveChanges();
+        catch (Exception e)
+        {
+            await _userRepository.RollbackTransactionAsync();
+            throw new Exception(e.Message);
+        }
     }
 
     private async Task<List<User>?> GetAllUsersFromCache()
@@ -72,19 +94,20 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
         {
             user = await _userRepository.GetAll().ToListAsync();
             _memoryCache.Set(CacheKey, user);
+            return user;
         }
         return user;
     }
 
-    private async Task UpdateUserIfNotExist(User? user, AddUserModel model)
+    private async Task<bool> UpdateUserIfNotExist(UserDto? user, AddUserModel model)
     {
         if (user is not null)
         {
             var updatedUser = model.Adapt<UpdateUserModel>();
             await UpdateUser(user.Id, updatedUser);
-            return;
+            return true;
         }
-
+        return false;
     }
 
 
