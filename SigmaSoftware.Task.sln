@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SigmaSoftware.Api", "SigmaSoftware.Task\SigmaSoftware.Api.csproj", "{D9AC1798-DB97-4CCA-8A23-6FAA0081FDFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SigmaSoftware.Data", "SigmaSoftware.Data\SigmaSoftware.Data.csproj", "{0F5EA99F-0BC2-4456-8D48-BA7B42BCFBCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SigmaSoftware.Common", "SigmaSoftware.Common\SigmaSoftware.Common.csproj", "{1D4468C8-9096-4894-81E3-75D1B6277B9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{0F5EA99F-0BC2-4456-8D48-BA7B42BCFBCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F5EA99F-0BC2-4456-8D48-BA7B42BCFBCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F5EA99F-0BC2-4456-8D48-BA7B42BCFBCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D4468C8-9096-4894-81E3-75D1B6277B9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D4468C8-9096-4894-81E3-75D1B6277B9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D4468C8-9096-4894-81E3-75D1B6277B9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D4468C8-9096-4894-81E3-75D1B6277B9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
