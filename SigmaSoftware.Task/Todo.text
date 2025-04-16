@@ -17,3 +17,15 @@
 8. It is important to be able to scale the application without changing the business logic.
 9. Unit Test should be written for the application.
 10. Git changes should be one of the biznes logic.
+
+
+
+Git Changes:
+1. Creating User Entity
+2. Creating AddRepository
+3. Creating UpdateRepository
+4. Creating AddCandidate method
+5. Creating UpdateCandidate method
+6. Creating GetCandidate method
+7. Candidate Controller
+8. Endpoints 
