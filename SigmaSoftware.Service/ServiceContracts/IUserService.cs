@@ -6,7 +6,7 @@ namespace SigmaSoftware.Service.ServiceContracts;
 
 public interface IUserService : IStatusGeneric
 {
-    List<UserDto> GetAllUsers();
+    Task<List<UserDto>> GetAllUsers();
     Task<UserDto?> GetUserById(Guid userId);
     Task AddUser(AddUserModel model);
     Task UpdateUser(Guid userId,UpdateUserModel model);
