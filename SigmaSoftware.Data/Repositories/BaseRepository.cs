@@ -25,6 +25,7 @@ public class BaseRepository<TEntity>(AppDbContext appDbContext) : IBaseRepositor
     public IQueryable<TEntity> GetAll()
     {
         return _context.Set<TEntity>().AsQueryable();
+
     }
 
     public async Task<TEntity?> GetById<TId>(TId id)

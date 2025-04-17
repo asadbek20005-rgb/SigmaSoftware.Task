@@ -23,6 +23,7 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
             var users = await GetAllUsers();
             var user = users.Where(u => u.Email == model.Email)
                 .FirstOrDefault();
+
             bool isUpdated = await UpdateUserIfNotExist(user, model);
             if (isUpdated)
                 return;
@@ -92,7 +93,8 @@ public class UserService(IBaseRepository<User> userRepository, IMemoryCache memo
         bool isThereUser = _memoryCache.TryGetValue(CacheKey, out List<User>? user);
         if (!isThereUser)
         {
-            user = await _userRepository.GetAll().ToListAsync();
+            user = _userRepository.GetAll().ToList();
+
             _memoryCache.Set(CacheKey, user);
             return user;
         }

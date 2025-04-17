@@ -2,7 +2,7 @@
 
 namespace SigmaSoftware.Data.RepositoryContracts;
 
-public interface IBaseRepository<TEntity> where TEntity :class
+public interface IBaseRepository<TEntity> where TEntity : class
 {
     IQueryable<TEntity> GetAll();
     Task<TEntity?> GetById<TId>(TId id);
